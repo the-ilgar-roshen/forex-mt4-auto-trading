@@ -196,21 +196,21 @@ bool closeAllPositions() {
 // close all opened positions
 bool closeAllPositionsByMagic(int magicNumber) {
     // error flag
-    bool error = false;
+    bool closed = false;
     int errorCounter = 0;
 
     // loop through all positions
-    for (int i = 0; i < getPositionsTotal(); i++) {
+    for (int i = getPositionsTotal() - 1; i >= 0; i--) {
         // check if this position has the same 'magic number' as given via parameter 'magicNumber'
         if (currentPositionMagicNumber != magicNumber) {
             continue; // means, skip this one which does not match with 'magicNumber'
         }
 
         // try to close the selected position
-        error = closePositionNow(i, SELECT_BY_INDEX);
+        closed = closePositionNow(i, SELECT_BY_INDEX);
 
-        // if there is any error or if even one position had an error on closing then deprecate all
-        if (error) {
+        // if a position not closed then an error occured 
+        if (!closed) {
             errorCounter++;
             Print("ERROR [FUNCTION closeAllPositions] : POSITION NOT CLOSED ! ");
             Print("\t Ticket: ", currentPositionTicket, " Counter: ", errorCounter);
