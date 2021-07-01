@@ -172,7 +172,7 @@ bool closePositionNow(int ticket_or_index, ENUM_POSITION_SELECTOR selector) {
     }
 
     // close the order at the current price
-    bool closed = OrderClose(ticket_or_index, currentPositionLots, currentPrice, slippage, arrowColor);
+    bool closed = OrderClose(currentPositionTicket, currentPositionLots, currentPrice, slippage, arrowColor);
 
     // RETURN SUCCESS OR ELSE
     return(closed);
@@ -197,6 +197,7 @@ bool closeAllPositions() {
 bool closeAllPositionsByMagic(int magicNumber) {
     // error flag
     bool error = false;
+    int errorCounter = 0;
 
     // loop through all positions
     for (int i = 0; i < getPositionsTotal(); i++) {
@@ -210,9 +211,16 @@ bool closeAllPositionsByMagic(int magicNumber) {
 
         // if there is any error or if even one position had an error on closing then deprecate all
         if (error) {
-            Print("ERROR [FUNCTION closeAllPositions] : NOT ALL POSITIONS WERE CLOSED !");
-            return(false);
+            errorCounter++;
+            Print("ERROR [FUNCTION closeAllPositions] : POSITION NOT CLOSED ! ");
+            Print("\t Ticket: ", currentPositionTicket, " Counter: ", errorCounter);
         }
+    }
+    
+    // if there is any error or if even one position had an error on closing then ...
+    if (errorCounter > 0) {
+        Print("ERROR [FUNCTION closeAllPositions] : NOT ALL POSITIONS WERE CLOSED ! Unclosed: ", errorCounter);
+        return(false);
     }
 
     // if everything is ok and all positions is closed properly without a single error
